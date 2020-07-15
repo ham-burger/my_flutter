@@ -3,8 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-const _channel = MethodChannel("sample/hogehoge");
-
 @pragma('vm:entry-point')
 void main2() => runApp(MyApp(title: 'Flutter Demo Main2'));
 
@@ -81,20 +79,26 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _updateSampleText() {
+  static const _channel = const MethodChannel("sample_channel");
+
+  Future<void> _updateSampleText() async {
+//  void _updateSampleText() async {
+    String text = "default";
+
     try {
-      setState(() async {
-        var result = await _channel.invokeMethod(
-          "foo",
-          <String, dynamic>{"bar": "baz"},
-        );
-        _sampleText = result;
-      });
+      // _sampleText = "hogehoge";
+      // var result = await _channel.invokeMethod(
+      //   "test",
+      // );
+      final String result = await _channel.invokeMethod("test");
+      text = result.toString();
     } on PlatformException catch (e) {
-      setState(() {
-        _sampleText = "error " + e.toString();
-      });
+      text = "error test";
     }
+
+    setState(() {
+      _sampleText = text;
+    });
   }
 
   @override
@@ -139,12 +143,13 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline4,
             ),
             Text(
-              "test" + _sampleText,
+              "test 1 " + _sampleText,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+//        onPressed: _updateSampleText,
         onPressed: _updateSampleText,
         tooltip: 'Increment',
         child: Icon(Icons.add),
